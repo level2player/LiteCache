@@ -1,5 +1,6 @@
 # LiteCache
-基于.net core的轻量级缓存库,支持本地化缓存,定时清除等功能
+基于.net core的轻量级缓存库,支持本地化缓存,任何对象都可以存储并且可设置有效时间,并且可以在停机后快速的恢复缓存.
+
 
 ### Nuget
 https://www.nuget.org/packages/LiteCache/
