@@ -1,0 +1,11 @@
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\bin\Debug\netcoreapp2.0\example.deps.json
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\bin\Debug\netcoreapp2.0\example.runtimeconfig.json
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\bin\Debug\netcoreapp2.0\example.runtimeconfig.dev.json
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\bin\Debug\netcoreapp2.0\example.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\bin\Debug\netcoreapp2.0\example.pdb
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\obj\Debug\netcoreapp2.0\example.csproj.CoreCompileInputs.cache
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\obj\Debug\netcoreapp2.0\example.AssemblyInfoInputs.cache
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\obj\Debug\netcoreapp2.0\example.AssemblyInfo.cs
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\obj\Debug\netcoreapp2.0\example.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\obj\Debug\netcoreapp2.0\example.pdb
+d:\Source\git_repository\C#\dotnet core\LiteCache\example\obj\Debug\netcoreapp2.0\example.csprojResolveAssemblyReference.cache

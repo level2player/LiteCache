@@ -1,0 +1,14 @@
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\bin\Debug\netcoreapp2.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\bin\Debug\netcoreapp2.0\xunit.runner.reporters.netcoreapp10.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\bin\Debug\netcoreapp2.0\xunit.runner.utility.netcoreapp10.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\bin\Debug\netcoreapp2.0\test.deps.json
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\bin\Debug\netcoreapp2.0\test.runtimeconfig.json
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\bin\Debug\netcoreapp2.0\test.runtimeconfig.dev.json
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\bin\Debug\netcoreapp2.0\test.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\bin\Debug\netcoreapp2.0\test.pdb
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\obj\Debug\netcoreapp2.0\test.csproj.CoreCompileInputs.cache
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\obj\Debug\netcoreapp2.0\test.AssemblyInfoInputs.cache
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\obj\Debug\netcoreapp2.0\test.AssemblyInfo.cs
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\obj\Debug\netcoreapp2.0\test.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\obj\Debug\netcoreapp2.0\test.pdb
+d:\Source\git_repository\C#\dotnet core\LiteCache\test\obj\Debug\netcoreapp2.0\test.csprojResolveAssemblyReference.cache

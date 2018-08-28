@@ -1,21 +1,4 @@
-# LiteCache
-基于.net core的轻量级缓存库,支持本地化缓存,定时清除等功能
-
-### Nuget
-https://www.nuget.org/packages/LiteCache/
-
-```net cli 
-dotnet add package LiteCache --version 1.0.5
-```
-```package manager  
-Install-Package LiteCache -Version 1.0.5
-```
-
-
-### 示例
-
-```c#
-using System;
+﻿using System;
 using Lsy.core.LiteCache;
 
 namespace example {
@@ -80,7 +63,3 @@ namespace example {
 
     }
 }
-
-
-
-本项目采用[MIT](http://opensource.org/licenses/MIT)开源授权许可证，完整的授权说明可在[LICENSE](LICENSE)文件中找到。

@@ -1,0 +1,9 @@
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\bin\Debug\netstandard2.0\LiteCache.deps.json
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\bin\Debug\netstandard2.0\LiteCache.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\bin\Debug\netstandard2.0\LiteCache.pdb
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\obj\Debug\netstandard2.0\LiteCache.csproj.CoreCompileInputs.cache
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\obj\Debug\netstandard2.0\LiteCache.AssemblyInfoInputs.cache
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\obj\Debug\netstandard2.0\LiteCache.AssemblyInfo.cs
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\obj\Debug\netstandard2.0\LiteCache.dll
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\obj\Debug\netstandard2.0\LiteCache.pdb
+d:\Source\git_repository\C#\dotnet core\LiteCache\src\LiteCache\obj\Debug\netstandard2.0\LiteCache.csprojResolveAssemblyReference.cache
