@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -12,13 +13,15 @@ namespace Lsy.core.LiteCache {
         new Dictionary<string, T> ();
 
         /// <summary>
-        /// 缓存数据集合
+        /// 缓存数据集合,值copy
         /// </summary>
         /// <typeparam name="string">缓存Key</typeparam>
         /// <typeparam name="T">缓存数据类型</typeparam>
         /// <returns></returns>
         public Dictionary<string, T> GlobalDictionary {
-            get { return globalDictionary; }
+            get {
+                return new Dictionary<string, T> (globalDictionary);
+            }
         }
         private System.Timers.Timer expiredTimer;
 
@@ -49,7 +52,11 @@ namespace Lsy.core.LiteCache {
                 return globalDictionary.Count ();
             }
         }
-
+        /// <summary>
+        /// 读写锁
+        /// </summary>
+        /// <returns></returns>
+        private ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim ();
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -62,10 +69,16 @@ namespace Lsy.core.LiteCache {
             CacheName = cacheName;
             RegisterTimeCheck ();
         }
+
+        ~LiteCache () {
+            if (cacheLock != null)
+                cacheLock.Dispose ();
+        }
         /// <summary>
         /// 从本地dat文件拉数据刷新到缓存中
         /// </summary>
         public void InitLoadLocData () {
+            cacheLock.EnterReadLock ();
             try {
                 var dic = Utility.DeserializeCache<T> (CacheName);
                 if (dic?.Count > 0) {
@@ -73,6 +86,8 @@ namespace Lsy.core.LiteCache {
                 }
             } catch (System.Exception e) {
                 throw e;
+            } finally {
+                cacheLock.ExitReadLock ();
             }
         }
         /// <summary>
@@ -80,30 +95,63 @@ namespace Lsy.core.LiteCache {
         /// </summary>
         /// <param name="value">数据</param>
         /// <returns>guid(唯一标识);是否成功</returns>
-        public (string, bool) SetValue (T value) {
+        public (string, bool) AddValue (T value) {
             var guid = $"{System.Guid.NewGuid().ToString()}|{System.DateTime.Now.AddSeconds(LiveTime)}";
-
+            cacheLock.EnterWriteLock ();
             globalDictionary.Add (guid, value);
             try {
                 Utility.SaveCache (globalDictionary, CacheName);
             } catch (System.Exception e) {
                 throw e;
+            } finally {
+                cacheLock.ExitWriteLock ();
             }
 
             return (guid, true);
         }
-
         /// <summary>
-        /// 异步设置缓存值
+        /// 批量添加数据
+        /// </summary>
+        /// <param name="dataList">新增加的数据</param>
+        /// <returns>添加条数;添加结果</returns>
+        public (int, bool) AddValue (List<T> dataList) {
+            int count = 0;
+            if (dataList == null || dataList.Count == 0)
+                return (count, false);
+            cacheLock.EnterWriteLock ();
+            foreach (var item in dataList) {
+                var guid = $"{count}{System.Guid.NewGuid().ToString()}|{System.DateTime.Now.AddSeconds(LiveTime)}";
+                globalDictionary.Add (guid, item);
+                count++;
+            }
+            try {
+                Utility.SaveCache (globalDictionary, CacheName);
+            } catch (System.Exception e) {
+                throw e;
+            } finally {
+                cacheLock.ExitWriteLock ();
+            }
+            return (count, true);
+        }
+        /// <summary>
+        /// 异步添加缓存值
         /// </summary>
         /// <param name="value">数据</param>
         /// <returns>guid(唯一标识);是否成功</returns>
         public async Task<(string, bool)> AsynSetValue (T value) {
             return await Task.Run (() => {
-                return SetValue (value);
+                return AddValue (value);
             });
         }
-
+        /// <summary>
+        /// 异步批量添加缓存值
+        /// </summary>
+        /// <returns></returns>
+        public async Task<(int, bool)> AsynSetValue (List<T> dataList) {
+            return await Task.Run (() => {
+                return AddValue (dataList);
+            });
+        }
         /// <summary>
         /// 取缓存值
         /// </summary>
@@ -112,22 +160,23 @@ namespace Lsy.core.LiteCache {
         public (T, bool) GetValue (string guid) {
             if (string.IsNullOrEmpty (guid))
                 return (default (T), false);
-
             T result = default (T);
-
-            if (globalDictionary.TryGetValue (guid, out result))
-                return (result, true);
-            else {
-                try {
+            cacheLock.EnterReadLock ();
+            try {
+                if (globalDictionary.TryGetValue (guid, out result)) {
+                    return (result, true);
+                } else {
                     var dic = Utility.DeserializeCache<T> (CacheName);
                     if (dic?.Count > 0) {
                         if (dic.TryGetValue (guid, out result))
                             return (result, true);
                     }
                     return (default (T), false);
-                } catch (System.Exception) {
-                    return (result, false);
                 }
+            } catch (System.Exception) {
+                return (result, false);
+            } finally {
+                cacheLock.ExitReadLock ();
             }
         }
         /// <summary>
@@ -151,11 +200,14 @@ namespace Lsy.core.LiteCache {
             if (string.IsNullOrEmpty (guid))
                 return false;
             if (globalDictionary.TryGetValue (guid, out var result)) {
-                result = value;
+                globalDictionary[guid] = value;
+                cacheLock.EnterWriteLock ();
                 try {
                     return Utility.SaveCache (globalDictionary, CacheName);
                 } catch (System.Exception e) {
                     return false;
+                } finally {
+                    cacheLock.ExitWriteLock ();
                 }
             } else {
                 return false;
@@ -182,13 +234,17 @@ namespace Lsy.core.LiteCache {
         public bool DeleteValue (string guid) {
             if (string.IsNullOrEmpty (guid))
                 return false;
+            cacheLock.EnterWriteLock ();
             if (globalDictionary.Remove (guid)) {
                 try {
                     return Utility.SaveCache (globalDictionary, CacheName);
                 } catch (System.Exception ex) {
                     throw ex;
+                } finally {
+                    cacheLock.ExitWriteLock ();
                 }
             }
+            cacheLock.EnterWriteLock ();
             return false;
         }
         /// <summary>
@@ -208,12 +264,15 @@ namespace Lsy.core.LiteCache {
         /// <returns>删除结果</returns>
         public bool Flush () {
             if (globalDictionary?.Count () > 0) {
+                cacheLock.EnterWriteLock ();
                 globalDictionary.Clear ();
                 try {
                     return Utility.SaveCache (globalDictionary, CacheName);
                 } catch (System.Exception ex) {
 
                     throw ex;
+                } finally {
+                    cacheLock.ExitWriteLock ();
                 }
             }
             return false;
@@ -223,7 +282,7 @@ namespace Lsy.core.LiteCache {
         #region 私有方法
 
         private void RegisterTimeCheck () {
-            expiredTimer = new Timer (CheckTime * 1000);
+            expiredTimer = new System.Timers.Timer (CheckTime * 1000);
             expiredTimer.Elapsed += OnTimedEvent;
             expiredTimer.AutoReset = true;
             expiredTimer.Enabled = true;
@@ -253,11 +312,14 @@ namespace Lsy.core.LiteCache {
                 //Console.WriteLine ($"Key:{keyColl}  is expired");
             }
             if (isClear) {
+                cacheLock.EnterWriteLock ();
                 try {
                     Utility.SaveCache (globalDictionary, CacheName);
                 } catch (System.Exception ex) {
                     Console.WriteLine ("save cache error,info=", ex.Message);
                     //throw ex;
+                } finally {
+                    cacheLock.ExitWriteLock ();
                 }
             }
         }

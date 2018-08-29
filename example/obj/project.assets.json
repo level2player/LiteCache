@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v2.0": {
-      "LiteCache/1.0.4": {
+      "LiteCache/1.0.6": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/LiteCache.dll": {}
@@ -209,16 +209,14 @@
     }
   },
   "libraries": {
-    "LiteCache/1.0.4": {
-      "sha512": "bnB38J9XEZSEfoXLl4BHuNccEEHeocNTRuHIrFOd3YBx3W1fMAOuXuKSu1U5pa1Q9R/qMaane7B+5M8keoTksg==",
+    "LiteCache/1.0.6": {
+      "sha512": "oDs+iJl83uhl5zoVBfXFBRAdgw/U5R0h6ctc9kGmp0ODM5lKK5SjS/oTMm8GFJuAS610suoZVbCQ3cKkdSg3xg==",
       "type": "package",
-      "path": "litecache/1.0.4",
+      "path": "litecache/1.0.6",
       "files": [
         ".signature.p7s",
-        "lib/netstandard2.0/LiteCache.deps.json",
         "lib/netstandard2.0/LiteCache.dll",
-        "lib/netstandard2.0/LiteCache.pdb",
-        "litecache.1.0.4.nupkg.sha512",
+        "litecache.1.0.6.nupkg.sha512",
         "litecache.nuspec"
       ]
     },
@@ -682,7 +680,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
-      "LiteCache >= 1.0.4",
+      "LiteCache >= 1.0.6",
       "Microsoft.NETCore.App >= 2.0.0"
     ]
   },
@@ -727,7 +725,7 @@
         "dependencies": {
           "LiteCache": {
             "target": "Package",
-            "version": "[1.0.4, )"
+            "version": "[1.0.6, )"
           },
           "Microsoft.NETCore.App": {
             "target": "Package",
