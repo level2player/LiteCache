@@ -32,7 +32,7 @@ namespace example {
                 Console.WriteLine ("load location data error,inof=" + ex.Message);
             }
 
-            while (true) {
+             while (true) {
 
                 Console.WriteLine ("Please enter the keyboard number and press enter to confirm");
                 Console.WriteLine ("1:creat,2:query,3:Count,4:Flush");
@@ -43,7 +43,7 @@ namespace example {
                         var input_creat = Console.ReadLine ();
                         var ary = input_creat.Split (',');
                         var newPerson = new Person () { Name = ary[0], Age = int.Parse (ary[1]), Gender = int.Parse (ary[2]) };
-                        var set_result = cache.SetValue (newPerson);
+                        var set_result = cache.AddValue (newPerson);
                         if (set_result.Item2) {
                             Console.WriteLine ("creat data complete,guid=" + set_result.Item1);
                         } else {
