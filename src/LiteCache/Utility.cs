@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using ProtoBuf;
 
 namespace Lsy.core.LiteCache {
     public static partial class Utility {
@@ -51,23 +50,23 @@ namespace Lsy.core.LiteCache {
         /// </summary>
         /// <param name="dic">数据集合</param>
         /// <param name="dtName">dat文件名称,不需要输入后缀,注意此名称不能重复,不然存在被覆盖的风险</param>
+        /// <param name="saveMode">保存模式,添加值默认append,修改和更新都是Create</param>
         /// <typeparam name="T">数据类型,如果是对象需要实现序列化接口</typeparam>
         /// <returns>保存结果</returns>
-        public static bool SaveCache<T> (Dictionary<string, T> dic, string dtName) {
+        public static bool SaveCache<T> (Dictionary<string, T> dic, string dtName, FileMode saveMode = FileMode.Append) {
+
             if (!Directory.Exists ("cache\\")) {
                 Directory.CreateDirectory ("cache\\");
             }
-            FileStream fs = new FileStream ("cache\\" + dtName + ".dat", FileMode.Create);
-            BinaryFormatter formatter = new BinaryFormatter ();
             try {
-                formatter.Serialize (fs, dic);
-            } catch (SerializationException e) {
-                //Console.WriteLine ("Failed to serialize. Reason: " + e.Message);
-                throw e;
-            } finally {
-                fs.Close ();
+                using (var file = File.Open ("cache\\" + dtName + ".bin", saveMode)) {
+                    Serializer.Serialize (file, dic);
+                    file.SetLength (file.Position);
+                }
+                return true;
+            } catch (System.Exception) {
+                throw;
             }
-            return true;
         }
         /// <summary>
         /// 从本地缓存文件取数据,实际就是一个反序列化的过程
@@ -76,18 +75,12 @@ namespace Lsy.core.LiteCache {
         /// <typeparam name="T">数据类型</typeparam>
         /// <returns>数据集合</returns>
         public static Dictionary<string, T> DeserializeCache<T> (string dtName) {
-            FileStream fs = new FileStream ("cache\\" + dtName + ".dat", FileMode.Open);
             try {
-                BinaryFormatter formatter = new BinaryFormatter ();
-
-                // Deserialize the hashtable from the file and 
-                // assign the reference to the local variable.
-                return (Dictionary<string, T>) formatter.Deserialize (fs);
-            } catch (SerializationException e) {
-                //Console.WriteLine ("Failed to deserialize. Reason: " + e.Message);
-                throw e;
-            } finally {
-                fs.Close ();
+                using (var file = File.OpenRead ("cache\\" + dtName + ".bin")) {
+                    return Serializer.Deserialize<Dictionary<string, T>> (file);
+                }
+            } catch (System.Exception) {
+                throw;
             }
         }
     }

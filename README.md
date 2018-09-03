@@ -1,15 +1,15 @@
-# LiteCache
-基于.net core的轻量级缓存库,支持本地化缓存,任何对象都可以存储并且可设置有效时间,并且可以在停机后快速的恢复缓存.
+﻿# LiteCache
+基于.net core的轻量级缓存库,支持本地化缓存,使用ProtoBuf net库实现的序列化和反序列化,任何对象都可以存储并且可设置有效时间,并且可以在停机后快速的恢复缓存.
 
 
 ### Nuget
 https://www.nuget.org/packages/LiteCache/
 
 ```net cli 
-dotnet add package LiteCache --version 1.0.5
+dotnet add package LiteCache --version 1.0.8
 ```
 ```package manager  
-Install-Package LiteCache -Version 1.0.5
+Install-Package LiteCache -Version 1.0.8
 ```
 
 
@@ -17,22 +17,26 @@ Install-Package LiteCache -Version 1.0.5
 
 ```c#
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Lsy.core.LiteCache;
+using ProtoBuf;
 
 namespace example {
     class Program {
         static void Main (string[] args) {
-            var cache = new LiteCache<Person> (60, 10, "mycache");
+            var cache = new LiteCache<Person> (999999, 999999, "mycache");
             try {
-                cache.InitLoadLocData ();
                 foreach (var item in cache.GlobalDictionary) {
                     Console.WriteLine ($"location cache key={item.Key},name={item.Value.Name}");
                 }
             } catch (System.Exception ex) {
-                Console.WriteLine ("load location data error,inof=" + ex.Message);
+                Console.WriteLine ("load location data error,info=" + ex.Message);
             }
 
-             while (true) {
+            while (true) {
 
                 Console.WriteLine ("Please enter the keyboard number and press enter to confirm");
                 Console.WriteLine ("1:creat,2:query,3:Count,4:Flush");
@@ -73,7 +77,7 @@ namespace example {
         }
     }
 
-    [Serializable]
+    [ProtoContract]
     public class Person {
         public string Name;
         public int Age;

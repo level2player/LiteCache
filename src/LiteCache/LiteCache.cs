@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -20,7 +21,12 @@ namespace Lsy.core.LiteCache {
         /// <returns></returns>
         public Dictionary<string, T> GlobalDictionary {
             get {
-                return new Dictionary<string, T> (globalDictionary);
+                try {
+                    cacheLock.EnterReadLock ();
+                    return new Dictionary<string, T> (globalDictionary);
+                } finally {
+                    cacheLock.ExitReadLock ();
+                }
             }
         }
         private System.Timers.Timer expiredTimer;
@@ -49,7 +55,7 @@ namespace Lsy.core.LiteCache {
         /// <value></value>
         public int Count {
             get {
-                return globalDictionary.Count ();
+                return GlobalDictionary.Count ();
             }
         }
         /// <summary>
@@ -68,6 +74,7 @@ namespace Lsy.core.LiteCache {
             CheckTime = checkTime;
             CacheName = cacheName;
             RegisterTimeCheck ();
+            InitLoadLocData ();
         }
 
         ~LiteCache () {
@@ -77,36 +84,36 @@ namespace Lsy.core.LiteCache {
         /// <summary>
         /// 从本地dat文件拉数据刷新到缓存中
         /// </summary>
-        public void InitLoadLocData () {
+        private void InitLoadLocData () {
             cacheLock.EnterReadLock ();
             try {
                 var dic = Utility.DeserializeCache<T> (CacheName);
+                // Console.WriteLine ("dic.count=" + dic.Count ());
                 if (dic?.Count > 0) {
                     globalDictionary = dic;
                 }
-            } catch (System.Exception e) {
-                throw e;
-            } finally {
+            } catch (System.Exception) { } finally {
                 cacheLock.ExitReadLock ();
             }
         }
         /// <summary>
-        /// 设置缓存值
+        /// 添加缓存值
         /// </summary>
         /// <param name="value">数据</param>
         /// <returns>guid(唯一标识);是否成功</returns>
         public (string, bool) AddValue (T value) {
             var guid = $"{System.Guid.NewGuid().ToString()}|{System.DateTime.Now.AddSeconds(LiveTime)}";
+            var tmp_dic = new Dictionary<string, T> () { { guid, value } };
             cacheLock.EnterWriteLock ();
-            globalDictionary.Add (guid, value);
             try {
-                Utility.SaveCache (globalDictionary, CacheName);
+                if (Utility.SaveCache (tmp_dic, CacheName)) {
+                    globalDictionary.Add (guid, value);
+                }
             } catch (System.Exception e) {
                 throw e;
             } finally {
                 cacheLock.ExitWriteLock ();
             }
-
             return (guid, true);
         }
         /// <summary>
@@ -114,22 +121,14 @@ namespace Lsy.core.LiteCache {
         /// </summary>
         /// <param name="dataList">新增加的数据</param>
         /// <returns>添加条数;添加结果</returns>
-        public (int, bool) AddValue (List<T> dataList) {
+        public (int, bool) AddValue (IList<T> dataList) {
             int count = 0;
             if (dataList == null || dataList.Count == 0)
                 return (count, false);
-            cacheLock.EnterWriteLock ();
             foreach (var item in dataList) {
-                var guid = $"{count}{System.Guid.NewGuid().ToString()}|{System.DateTime.Now.AddSeconds(LiveTime)}";
-                globalDictionary.Add (guid, item);
-                count++;
-            }
-            try {
-                Utility.SaveCache (globalDictionary, CacheName);
-            } catch (System.Exception e) {
-                throw e;
-            } finally {
-                cacheLock.ExitWriteLock ();
+                var reulst = AddValue (item);
+                if (!string.IsNullOrEmpty (reulst.Item1) && reulst.Item2)
+                    count++;
             }
             return (count, true);
         }
@@ -138,7 +137,7 @@ namespace Lsy.core.LiteCache {
         /// </summary>
         /// <param name="value">数据</param>
         /// <returns>guid(唯一标识);是否成功</returns>
-        public async Task<(string, bool)> AsynSetValue (T value) {
+        public async Task<(string, bool)> AsynAddValue (T value) {
             return await Task.Run (() => {
                 return AddValue (value);
             });
@@ -147,7 +146,7 @@ namespace Lsy.core.LiteCache {
         /// 异步批量添加缓存值
         /// </summary>
         /// <returns></returns>
-        public async Task<(int, bool)> AsynSetValue (List<T> dataList) {
+        public async Task<(int, bool)> AsynAddValue (List<T> dataList) {
             return await Task.Run (() => {
                 return AddValue (dataList);
             });
@@ -203,7 +202,7 @@ namespace Lsy.core.LiteCache {
                 globalDictionary[guid] = value;
                 cacheLock.EnterWriteLock ();
                 try {
-                    return Utility.SaveCache (globalDictionary, CacheName);
+                    return Utility.SaveCache (globalDictionary, CacheName, FileMode.Create);
                 } catch (System.Exception e) {
                     return false;
                 } finally {
@@ -237,7 +236,7 @@ namespace Lsy.core.LiteCache {
             cacheLock.EnterWriteLock ();
             if (globalDictionary.Remove (guid)) {
                 try {
-                    return Utility.SaveCache (globalDictionary, CacheName);
+                    return Utility.SaveCache (globalDictionary, CacheName, FileMode.Create);
                 } catch (System.Exception ex) {
                     throw ex;
                 } finally {
@@ -267,9 +266,8 @@ namespace Lsy.core.LiteCache {
                 cacheLock.EnterWriteLock ();
                 globalDictionary.Clear ();
                 try {
-                    return Utility.SaveCache (globalDictionary, CacheName);
+                    return Utility.SaveCache (globalDictionary, CacheName, FileMode.Create);
                 } catch (System.Exception ex) {
-
                     throw ex;
                 } finally {
                     cacheLock.ExitWriteLock ();
@@ -314,7 +312,7 @@ namespace Lsy.core.LiteCache {
             if (isClear) {
                 cacheLock.EnterWriteLock ();
                 try {
-                    Utility.SaveCache (globalDictionary, CacheName);
+                    Utility.SaveCache (globalDictionary, CacheName, FileMode.Create);
                 } catch (System.Exception ex) {
                     Console.WriteLine ("save cache error,info=", ex.Message);
                     //throw ex;
