@@ -85,6 +85,9 @@ namespace Lsy.core.LiteCache {
         /// 从本地dat文件拉数据刷新到缓存中
         /// </summary>
         private void InitLoadLocData () {
+            // if (!File.Exists ($"cache/{CacheName}.bin")) {
+            //     File.Create ($"cache/{CacheName}.bin");
+            // }
             cacheLock.EnterReadLock ();
             try {
                 var dic = Utility.DeserializeCache<T> (CacheName);

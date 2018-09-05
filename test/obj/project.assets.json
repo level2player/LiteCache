@@ -6049,11 +6049,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\test\\test.csproj",
+      "projectUniqueName": "d:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\test\\test.csproj",
       "projectName": "test",
-      "projectPath": "D:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\test\\test.csproj",
+      "projectPath": "d:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\test\\test.csproj",
       "packagesPath": "C:\\Users\\zhangjie12497\\.nuget\\packages\\",
-      "outputPath": "D:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\test\\obj\\",
+      "outputPath": "d:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\test\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

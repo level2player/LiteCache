@@ -2548,11 +2548,11 @@
   "project": {
     "version": "1.0.7",
     "restore": {
-      "projectUniqueName": "D:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\src\\LiteCache\\LiteCache.csproj",
+      "projectUniqueName": "d:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\src\\LiteCache\\LiteCache.csproj",
       "projectName": "LiteCache",
-      "projectPath": "D:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\src\\LiteCache\\LiteCache.csproj",
+      "projectPath": "d:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\src\\LiteCache\\LiteCache.csproj",
       "packagesPath": "C:\\Users\\zhangjie12497\\.nuget\\packages\\",
-      "outputPath": "D:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\src\\LiteCache\\obj\\",
+      "outputPath": "d:\\Source\\git_repository\\C#\\dotnet core\\LiteCache\\src\\LiteCache\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

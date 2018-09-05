@@ -54,14 +54,18 @@ namespace Lsy.core.LiteCache {
         /// <typeparam name="T">数据类型,如果是对象需要实现序列化接口</typeparam>
         /// <returns>保存结果</returns>
         public static bool SaveCache<T> (Dictionary<string, T> dic, string dtName, FileMode saveMode = FileMode.Append) {
-
-            if (!Directory.Exists ("cache\\")) {
-                Directory.CreateDirectory ("cache\\");
+            if (!Directory.Exists ("cache/")) {
+                Directory.CreateDirectory ("cache/");
+            }
+            if (!File.Exists ($"cache/{dtName}.bin")) {
+                var file = File.Create ($"cache/{dtName}.bin");
+                file.Flush ();
+                file.Close ();
             }
             try {
-                using (var file = File.Open ("cache\\" + dtName + ".bin", saveMode)) {
+                using (var file = File.Open ($"cache/{dtName}.bin", saveMode)) {
                     Serializer.Serialize (file, dic);
-                    file.SetLength (file.Position);
+                    file.Close ();
                 }
                 return true;
             } catch (System.Exception) {
@@ -76,7 +80,7 @@ namespace Lsy.core.LiteCache {
         /// <returns>数据集合</returns>
         public static Dictionary<string, T> DeserializeCache<T> (string dtName) {
             try {
-                using (var file = File.OpenRead ("cache\\" + dtName + ".bin")) {
+                using (var file = File.OpenRead ("cache/" + dtName + ".bin")) {
                     return Serializer.Deserialize<Dictionary<string, T>> (file);
                 }
             } catch (System.Exception) {
