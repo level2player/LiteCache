@@ -80,7 +80,7 @@ namespace Lsy.core.LiteCache {
         /// <returns>数据集合</returns>
         public static Dictionary<string, T> DeserializeCache<T> (string dtName) {
             try {
-                using (var file = File.OpenRead ("cache/" + dtName + ".bin")) {
+                using (var file = File.OpenRead ($"cache/{dtName}.bin")) {
                     return Serializer.Deserialize<Dictionary<string, T>> (file);
                 }
             } catch (System.Exception) {

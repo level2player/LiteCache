@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -85,9 +84,6 @@ namespace Lsy.core.LiteCache {
         /// 从本地dat文件拉数据刷新到缓存中
         /// </summary>
         private void InitLoadLocData () {
-            // if (!File.Exists ($"cache/{CacheName}.bin")) {
-            //     File.Create ($"cache/{CacheName}.bin");
-            // }
             cacheLock.EnterReadLock ();
             try {
                 var dic = Utility.DeserializeCache<T> (CacheName);
@@ -128,10 +124,23 @@ namespace Lsy.core.LiteCache {
             int count = 0;
             if (dataList == null || dataList.Count == 0)
                 return (count, false);
+            var tmp_dic = new Dictionary<string, T> ();
             foreach (var item in dataList) {
-                var reulst = AddValue (item);
-                if (!string.IsNullOrEmpty (reulst.Item1) && reulst.Item2)
-                    count++;
+                var guid = $"{System.Guid.NewGuid().ToString()}|{System.DateTime.Now.AddSeconds(LiveTime)}";
+                tmp_dic.Add (guid, item);
+                count++;
+            }
+            cacheLock.EnterWriteLock ();
+            try {
+                if (Utility.SaveCache (tmp_dic, CacheName)) {
+                    foreach (var item in tmp_dic) {
+                        globalDictionary.Add (item.Key, item.Value);
+                    }
+                }
+            } catch (System.Exception e) {
+                throw e;
+            } finally {
+                cacheLock.ExitWriteLock ();
             }
             return (count, true);
         }

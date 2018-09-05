@@ -61,17 +61,17 @@ namespace example {
             // }    
 
             Task t1 = Task.Run (() => {
-                for (int i = 0; i < 99999; i++) {
-
-                    cache.AddValue (new Person () { Name = "zj1", Age = i, Gender = 0 });
-
+                var list=new List<Person>();
+                for (int i = 0; i < 999999; i++) {
+                    list.Add (new Person () { Name = "zj1", Age = i, Gender = 0 });
                 }
+                cache.AddValue(list);
             });
         
         Task t2 = Task.Run (() => {
-            for (int i = 0; i < 99999; i++) {
-                cache.AddValue (new Person () { Name = "zj2", Age = i, Gender = 0 });
-            }
+            // for (int i = 0; i < 99999; i++) {
+            //     cache.AddValue (new Person () { Name = "zj2", Age = i, Gender = 0 });
+            // }
 
         });
 
